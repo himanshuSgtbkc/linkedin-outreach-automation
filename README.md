@@ -390,6 +390,13 @@ Update lead record in Supabase
 ```
 
 ---
+## Screenshots
+Workflow 1 (Outer Workflow)
+<img width="1806" height="386" alt="Screenshot 2026-06-09 140045" src="https://github.com/user-attachments/assets/d4c5e1ba-cce0-41db-9b64-b22dd647cfc8" />
+
+Workflow 2 (Inner Workflow)
+<img width="1777" height="535" alt="Screenshot 2026-06-09 144557" src="https://github.com/user-attachments/assets/ba93dc37-65f7-4739-b246-b07113fc26f7" />
+
 
 ## Notes
 

@@ -1,0 +1,1137 @@
+{
+  "name": "LinkedIn Outreach Worflow 1",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2304,
+        240
+      ],
+      "id": "9de0ae4d-2d7a-410d-8072-50a6b8d98c34",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me1",
+      "typeVersion": 1,
+      "position": [
+        -1376,
+        592
+      ],
+      "id": "9e3e19cf-c83f-4081-add2-5c8e0f8a64c2"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body.leads",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -2512,
+        240
+      ],
+      "id": "792d0295-3764-48d1-b499-ef2f18a9a790",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1152,
+        224
+      ],
+      "id": "0515225b-585d-4709-919b-f3cf803fb758",
+      "name": "Loop Over Items2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -2048,
+        224
+      ],
+      "id": "14bd40d9-4f73-45ce-8b89-714bee810ce9",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "startCampaign",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2736,
+        240
+      ],
+      "id": "a9b229d8-5322-4de3-b4cc-e563b18cf06e",
+      "name": "Webhook2",
+      "webhookId": "2d23193b-4db6-42af-9d02-0066bd3ff244"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "805fd862-9821-4c52-ab89-d771f21a8cd1",
+              "leftValue": "={{ $('Loop Over Items1').item.json.linkedin_profile }}",
+              "rightValue": "\"\"",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "cb9be12a-3d1e-442d-97f7-acc475e31d7d",
+              "leftValue": "={{ $('Loop Over Items1').item.json.linkedin_profile }}",
+              "rightValue": "N/A",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2160,
+        368
+      ],
+      "id": "76cf1eea-a9fe-48d8-b2d4-92276e5a2e99",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -896,
+        16
+      ],
+      "id": "4d8687ae-5000-468a-947e-1e6e8af574bd",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "60dcefb8-f69d-400c-87b2-6dd10d8cac89",
+              "leftValue": "={{ $json.is10BlockEnd }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "d822436e-87bc-49e9-9cbf-9b186bbe5ce8",
+              "leftValue": "={{ $json.count }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -592,
+        240
+      ],
+      "id": "2636e475-97d8-44ca-a1f0-fcb4053fc49b",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "725f0473-a131-440f-84e9-0313c6369ed3",
+              "leftValue": "={{ $('Rate limit check').item.json.is5BlockEnd }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "a9b1396e-5a52-4052-b175-93ce7a57969a",
+              "leftValue": "={{ $('Rate limit check').item.json.count }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -352,
+        256
+      ],
+      "id": "0a1ac2ad-2cef-4894-8538-0d9974b6bbc9",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "amount": "={{ Math.floor(Math.random()*50 + 50) }}",
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        160
+      ],
+      "id": "c517259c-b688-48e3-8698-396304a07c42",
+      "name": "Wait1",
+      "webhookId": "25ed5e6d-62fe-4950-b00e-1d69c4a769de"
+    },
+    {
+      "parameters": {
+        "amount": 22,
+        "unit": "hours"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "75ba65ed-5023-4278-9a61-5d212f79970c",
+      "name": "Wait2",
+      "webhookId": "d9172137-6344-495d-93fa-9443542e8366"
+    },
+    {
+      "parameters": {
+        "amount": "={{ Math.floor(Math.random()*5 + 15) }}",
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        336
+      ],
+      "id": "b13f350c-2f0c-421e-be51-78f0f1a2d787",
+      "name": "Wait",
+      "webhookId": "0e8aeffa-2519-49b8-9385-7f5dd081b5d4"
+    },
+    {
+      "parameters": {
+        "options": {
+          "timezone": "IST"
+        }
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -1904,
+        224
+      ],
+      "id": "b95fbe1c-e922-44eb-bf4b-01c40f2e9985",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "amount": "={{ $json.waitHours }}",
+        "unit": "hours"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1568,
+        224
+      ],
+      "id": "6098887a-02a1-4d75-87af-c7ddb52318e8",
+      "name": "Wait3",
+      "webhookId": "a5f619a2-ead7-41d5-8bb0-7a0ead798050"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f0749912-6054-449b-b5fb-e9212d2ddf5b",
+              "leftValue": "={{ $json.linkedinStatus }}",
+              "rightValue": "Connected",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        848,
+        288
+      ],
+      "id": "9b55ce4b-dd76-4275-b44b-1623f4c6a3c6",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "amount": 24,
+        "unit": "hours"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        304
+      ],
+      "id": "7f83409a-32ae-4d6f-b0a0-2bc959c171e1",
+      "name": "Wait4",
+      "webhookId": "671f3903-7b52-4860-8b7c-c9eedea936a7"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "campaign",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.body.campaign_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "executionid",
+              "fieldValue": "={{ $execution.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2448,
+        16
+      ],
+      "id": "cac6729b-5c3a-481e-8cf1-2920bcd8389b",
+      "name": "Campaign Execution Id Update",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "profiles",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $('Webhook2').item.json.body.user_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1840,
+        544
+      ],
+      "id": "2a96697a-dcce-4c8e-88f1-b1f66fa49989",
+      "name": "Get User Details",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "LinkedIn Campaign",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "linkedin",
+              "fieldValue": "={{ $('Check If Lead Has Linkedin Id').item.json.linkedin_identifier }}"
+            },
+            {
+              "fieldId": "full_name",
+              "fieldValue": "={{ $('Check If Lead Has Linkedin Id').item.json.name }}"
+            },
+            {
+              "fieldId": "gamaID",
+              "fieldValue": "={{ $('Webhook2').item.json.body.user_id }}"
+            },
+            {
+              "fieldId": "Campaign ID",
+              "fieldValue": "={{ $('Webhook2').item.json.body.campaign_id }}"
+            },
+            {
+              "fieldId": "mobile_number",
+              "fieldValue": "={{ $('Loop Over Items1').item.json.phone }}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{ $('Loop Over Items1').item.json.email }}"
+            },
+            {
+              "fieldId": "company_name",
+              "fieldValue": "={{ $('Loop Over Items1').item.json.company }}"
+            },
+            {
+              "fieldId": "unipileID",
+              "fieldValue": "={{ $('Get User Details').item.json.unipileID }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1648,
+        544
+      ],
+      "id": "4b8d2d1c-96e8-4dae-871a-a53d2cc9ee18",
+      "name": "Enter Leads detail in DB",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const WORK_START = 9;\nconst WORK_END = 17;\nconst MIN_WORKING_RETURN = 0.01;\n\nconst inputTime = $json.currentDate ;\n// Parse date\nconst now = new Date(inputTime);\n\n// Extract timezone offset from ISO (+05:30 → 330 minutes)\nconst offsetMatch = inputTime.match(/([+-]\\d{2}):(\\d{2})$/);\nconst offsetMinutes = offsetMatch\n  ? (parseInt(offsetMatch[1]) * 60 + Math.sign(parseInt(offsetMatch[1])) * parseInt(offsetMatch[2]))\n  : 0;\n\n// Get \"local\" hour based on input timezone\nconst localMinutes =\n  now.getUTCHours() * 60 +\n  now.getUTCMinutes() +\n  offsetMinutes;\n\nconst localHour = Math.floor(localMinutes / 60) % 24;\n\n// If within working hours\nif (localHour >= WORK_START && localHour < WORK_END) {\n  return [{\n    json: {\n      waitHours: MIN_WORKING_RETURN\n    }\n  }];\n}\n\n// Calculate next 9 AM in same timezone\nconst target = new Date(now);\n\n// Before 9 AM → today 9 AM\nif (localHour < WORK_START) {\n  target.setUTCHours(WORK_START - offsetMinutes / 60, 0, 0, 0);\n}\n// After 5 PM → next day 9 AM\nelse {\n  target.setUTCDate(target.getUTCDate() + 1);\n  target.setUTCHours(WORK_START - offsetMinutes / 60, 0, 0, 0);\n}\n\nconst waitMs = target - now;\nconst waitHours = +(waitMs / (1000 * 60 * 60)).toFixed(2);\n\nreturn [{\n  json: {\n    waitHours\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1728,
+        224
+      ],
+      "id": "3d882672-25b9-42c9-aa9d-18e2f1d09379",
+      "name": "Wait for next working Hour"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "LinkedIn Campaign",
+        "returnAll": true,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Campaign ID",
+              "condition": "eq",
+              "keyValue": "={{ $('Webhook2').item.json.body.campaign_id }}"
+            },
+            {
+              "keyName": "gamaID",
+              "condition": "eq",
+              "keyValue": "={{ $('Webhook2').item.json.body.user_id }}"
+            },
+            {
+              "keyName": "Invitation",
+              "condition": "eq",
+              "keyValue": "NIL"
+            },
+            {
+              "keyName": "DM",
+              "condition": "eq",
+              "keyValue": "NIL"
+            },
+            {
+              "keyName": "LinkedIn HeadLine",
+              "condition": "eq",
+              "keyValue": "NIL"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1408,
+        224
+      ],
+      "id": "60f43b7d-4231-4154-b261-bacc9853c983",
+      "name": "fetch lead details",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "Campaign",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json[\"Campaign ID\"] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -976,
+        240
+      ],
+      "id": "bca8a497-acf8-4b55-8eb4-915d6c9566a5",
+      "name": "Fetch Campaign Details",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let count = Number($json.linkedinLeadCounter);\n// or: parseInt($input.first().json.linkedinLeadCounter, 10)\n\nlet is5BlockEnd = (count % 6 === 0);\nlet is10BlockEnd = (count % 12 === 0);\n\n\nreturn {\n  json: {\n    count,\n    is5BlockEnd: is5BlockEnd ,\n    is10BlockEnd: is10BlockEnd \n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -768,
+        240
+      ],
+      "id": "b44320c8-0b7c-4c2e-848e-112eeb44d3be",
+      "name": "Rate limit check"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "Campaign",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Fetch Campaign Details').item.json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "linkedinLeadCounter",
+              "fieldValue": "={{ $('Fetch Campaign Details').item.json.linkedinLeadCounter + 1 }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        512,
+        288
+      ],
+      "id": "3bc93f9e-5724-4716-8b30-325cbd74d62a",
+      "name": "Update Campaign Details",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "profiles",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $('Webhook2').item.json.body.user_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        688,
+        288
+      ],
+      "id": "73cb8a16-b6de-4d89-b94e-4ee9f54b8e65",
+      "name": "Fetch User Details",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "PPwRckc6yV9zV2v5",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/PPwRckc6yV9zV2v5",
+          "cachedResultName": "LinkedIn Reachout inner1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "linkedin": "={{ $('Loop Over Items2').item.json.linkedin }}",
+            "Campaign ID": "={{ $('Loop Over Items2').item.json[\"Campaign ID\"] }}",
+            "gamaID": "={{ $('Loop Over Items2').item.json.gamaID }}",
+            "sno": "={{ $('Loop Over Items2').item.json.sno }}",
+            "accountId": "={{ $('Fetch User Details').item.json.unipileID }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "linkedin",
+              "displayName": "linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "Campaign ID",
+              "displayName": "Campaign ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "gamaID",
+              "displayName": "gamaID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "sno",
+              "displayName": "sno",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "accountId",
+              "displayName": "accountId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1200,
+        512
+      ],
+      "id": "ac52dd51-2d83-4d45-ad1e-eed2d974928b",
+      "name": "Call another workflow for each lead",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "campaign"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        16
+      ],
+      "id": "f905aa03-9dac-4a42-a07b-751cdfd79bbf",
+      "name": "Update Status",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const data = item.json;\n  let identifier = null;\n\n  if (data.linkedin_profile) {\n    if (data.linkedin_profile.includes('/in/')) {\n      identifier = data.linkedin_profile.split('/in/')[1].replace('/', '');\n    } else {\n      identifier = data.linkedin_profile; // already an identifier\n    }\n  }\n\n  return {\n    json: {\n      name: data.name,\n      \n      linkedin_identifier: identifier\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2000,
+        448
+      ],
+      "id": "e5da9fd1-6dae-47d2-b383-36c779d59d3a",
+      "name": "Check If Lead Has Linkedin Id"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Campaign Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook2": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Campaign Execution Id Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Replace Me1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check If Lead Has Linkedin Id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Update Campaign Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Update Campaign Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Update Campaign Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Wait for next working Hour",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "fetch lead details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Call another workflow for each lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "Fetch User Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User Details": {
+      "main": [
+        [
+          {
+            "node": "Enter Leads detail in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enter Leads detail in DB": {
+      "main": [
+        [
+          {
+            "node": "Replace Me1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for next working Hour": {
+      "main": [
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fetch lead details": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Campaign Details": {
+      "main": [
+        [
+          {
+            "node": "Rate limit check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rate limit check": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Campaign Details": {
+      "main": [
+        [
+          {
+            "node": "Fetch User Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch User Details": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call another workflow for each lead": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Update Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Lead Has Linkedin Id": {
+      "main": [
+        [
+          {
+            "node": "Get User Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "4d450330-07bc-49e0-80df-327fd9075163",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db030780bee6f6753243e0353bbd8b9f10dd5dd83871b5bb84664f14b629c661"
+  },
+  "nodeGroups": [],
+  "id": "tHuwoY30lQBYQOJO",
+  "tags": []
+}

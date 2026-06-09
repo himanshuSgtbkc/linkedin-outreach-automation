@@ -1,0 +1,1959 @@
+{
+  "name": "LinkedIn Outreach Workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your Task:\nWrite a short, friendly LinkedIn DM to an existing connection about the message context.\nThe message should sound like a personal note, not an AI or template.\nEvery message must feel distinct, even if run 100 times for similar profiles.\n\n🎯 Goal\n\nMake it sound like I personally noticed something about them\n\n⚙️ Output Rules\n\nWrite one message under 45 words.\n\nChoose a different structure randomly each time (don’t follow the same sentence order).\n\nVary the tone between these 5 modes:\n\nfriendly\n\ncurious\n\nthoughtful\n\ncasual\n\nenthusiastic\n\nRandomly decide to omit or combine sentences — it’s okay if some messages are 2 lines and others 4.\n\nEach message must use different rhythm and flow — not all should start with “Hey {name}”.\n\n🧠 Variability Pools (choose randomly from each)\n\nGreeting pool:\nHey, Hi, Hello, Hey there, What’s up, Hope you’re doing great, Yo, Hiya, Good to see your work again\n\nIntro style pool:\n\n“Loved your background in {{ $json.headline }}.”\n\n“Your work in {{ $json.headline }} really stood out.”\n\n\n“Came across your profile — impressive mix of skills!”\n\n“You’ve got an awesome blend of experience in  {{ $('Update Database With LinkedIn Profile Data').item.json.headline }} .”\n\nTransition style pool:\n\n“Been working on something similar lately.”\n\n“Wanted to share something I’ve been building.”\n\n“Figured you might relate to this.”\n\n“Thought you’d find this interesting.”\n\n“You might have a cool take on this.”\n\n\n\n\n🪄 Output Example Styles (randomly vary sentence order)\n\n1.\nHi {{ $json.name }}, your work in {{ $json.headline }} caught my eye, message based on context.\n\n\n2.\nHello {{ $json.name }}, loved your mix of {{ headline }}, message based on context\n\n\n🧩 leads data:\nname : {{ $('Update Database With LinkedIn Profile Data').item.json.full_name }}\n\nheadline : {{ $('Update Database With LinkedIn Profile Data').item.json['LinkedIn HeadLine'] }}\n\n🧩 User data: use get user tool to get the data, you are sending the message on behalf of the user, \n\ndetails of your company : {{ $('Get a row3').item.json.company_about }}\n\n\n🧩 message context: {{ $json.Context }}.\n\n\ndon't use similar words as hey hi again and again ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2496,
+        304
+      ],
+      "id": "9acc1984-85d6-41ec-a22f-5afdf0adb6a8",
+      "name": "DM out",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://YourUnipileURL/api/v1/chats",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_API_KEY"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "attendees_ids",
+              "value": "={{ $('Update Database With LinkedIn Profile Data').item.json['LinkedIn provider-Id'] }}"
+            },
+            {
+              "name": "account_id",
+              "value": "={{ $('When Executed by Another Workflow').item.json.accountId }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2896,
+        288
+      ],
+      "id": "67687c0f-809b-4942-bcc1-248ce319406a",
+      "name": "send message",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://YourUnipileURL/api/v1/posts/reaction",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_API_KEY"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "account_id",
+              "value": "={{ $('When Executed by Another Workflow').item.json.accountId }}"
+            },
+            {
+              "name": "post_id",
+              "value": "={{ $('Limit').item.json.items.social_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1024,
+        -112
+      ],
+      "id": "e9e271d8-6cee-4bdc-8ab5-cfb749f36976",
+      "name": "Leave Reaction on Post1",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "amount": "={{ $json.JSON.randomIndex }}",
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1456,
+        16
+      ],
+      "id": "06d30bd0-aaa0-41e9-be3c-17150159fd02",
+      "name": "Wait10",
+      "webhookId": "f80d8663-d2b7-4554-9add-252b9238840e"
+    },
+    {
+      "parameters": {
+        "amount": 23
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        848,
+        -112
+      ],
+      "id": "a2801030-12a7-420d-a2ae-90df8c7762e4",
+      "name": "Wait1",
+      "webhookId": "5c3130b3-e5b4-4273-8f08-cd2ccadf15e5"
+    },
+    {
+      "parameters": {
+        "jsCode": "const randomIndex = Math.floor(2+ Math.random() * 5);\nreturn [{JSON :{\n  randomIndex\n}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        -128
+      ],
+      "id": "92535ad2-4370-43e4-bd7d-daa15a9f5555",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "LinkedIn Campaign",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Campaign ID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json[\"Campaign ID\"] }}"
+            },
+            {
+              "keyName": "appUserID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.appUserID }}"
+            },
+            {
+              "keyName": "linkedin",
+              "condition": "eq",
+              "keyValue": "={{ $('Update Database With LinkedIn Profile Data').item.json.linkedin }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "DM",
+              "fieldValue": "={{ $('DM out').item.json.output }}"
+            },
+            {
+              "fieldId": "chatID",
+              "fieldValue": "={{ $json.chat_id }}"
+            },
+            {
+              "fieldId": "Invitation",
+              "fieldValue": "existing"
+            },
+            {
+              "fieldId": "postURL",
+              "fieldValue": "={{ $('Limit').item.json.items.social_id }}"
+            },
+            {
+              "fieldId": "comment",
+              "fieldValue": "={{ $('Generate Relevant Comment').item.json.output }}"
+            },
+            {
+              "fieldId": "chatID",
+              "fieldValue": "={{ $json.chat_id }}"
+            },
+            {
+              "fieldId": "lastActionAt",
+              "fieldValue": "={{ $now.toISO() }}"
+            },
+            {
+              "fieldId": "OutreachStatus",
+              "fieldValue": "DM"
+            },
+            {
+              "fieldId": "ChatSummary",
+              "fieldValue": "=DM sent by us : {{ $('DM out').item.json.output }}"
+            },
+            {
+              "fieldId": "message count",
+              "fieldValue": "={{ $('Update Database With LinkedIn Profile Data').item.json[\"message count\"] + 1}}"
+            },
+            {
+              "fieldId": "lastMessage",
+              "fieldValue": "={{ $('DM out').item.json.output }}"
+            },
+            {
+              "fieldId": "message_id",
+              "fieldValue": "={{ $('send message').item.json.message_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3088,
+        256
+      ],
+      "id": "125419e2-07c4-48bd-bd39-d72edcc7c0c9",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "LinkedIn Campaign",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Campaign ID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json[\"Campaign ID\"] }}"
+            },
+            {
+              "keyName": "appUserID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.appUserID }}"
+            },
+            {
+              "keyName": "linkedin",
+              "condition": "eq",
+              "keyValue": "={{ $('Update Database With LinkedIn Profile Data').item.json.linkedin }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "Invitation",
+              "fieldValue": "sent"
+            },
+            {
+              "fieldId": "postURL",
+              "fieldValue": "={{ $('Limit').item.json.items.social_id }}"
+            },
+            {
+              "fieldId": "comment",
+              "fieldValue": "={{ $('Generate Relevant Comment').item.json.output }}"
+            },
+            {
+              "fieldId": "lastActionAt",
+              "fieldValue": "={{ $now.toISO() }}"
+            },
+            {
+              "fieldId": "invitationId",
+              "fieldValue": "={{ $json.invitation_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2256,
+        -64
+      ],
+      "id": "e1267111-5991-47fd-bc1e-6da8675636a3",
+      "name": "Update a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your Task:\nWrite a short, friendly LinkedIn DM to an existing connection about the message context.\nThe message should sound like a personal note, not an AI or template.\nEvery message must feel distinct, even if run 100 times for similar profiles.\n\n🎯 Goal\n\nMake it sound like I personally noticed something about them\n\n⚙️ Output Rules\n\nWrite one message under 45 words.\n\nChoose a different structure randomly each time (don’t follow the same sentence order).\n\nVary the tone between these 5 modes:\n\nfriendly\n\ncurious\n\nthoughtful\n\ncasual\n\nenthusiastic\n\nRandomly decide to omit or combine sentences — it’s okay if some messages are 2 lines and others 4.\n\nEach message must use different rhythm and flow — not all should start with “Hey {name}”.\n\n🧠 Variability Pools (choose randomly from each)\n\nGreeting pool:\nHey, Hi, Hello, Hey there, What’s up, Hope you’re doing great, Yo, Hiya, Good to see your work again\n\nIntro style pool:\n\n“Loved your background in {{ $json.headline }}.”\n\n“Your work in {{ $json.headline }} really stood out.”\n\n\n“Came across your profile — impressive mix of skills!”\n\n“You’ve got an awesome blend of experience in  {{ $('Update Database With LinkedIn Profile Data').item.json.headline }} .”\n\nTransition style pool:\n\n“Been working on something similar lately.”\n\n“Wanted to share something I’ve been building.”\n\n“Figured you might relate to this.”\n\n“Thought you’d find this interesting.”\n\n“You might have a cool take on this.”\n\n\n\n\n🪄 Output Example Styles (randomly vary sentence order)\n\n1.\nHi {{ $json.name }}, your work in {{ $json.headline }} caught my eye, message based on context.\n\n\n2.\nHello {{ $json.name }}, loved your mix of {{ headline }}, message based on context\n\n\n🧩 leads data:\nname : {{ $('Update Database With LinkedIn Profile Data').item.json.full_name }}\n\nheadline : {{ $('Update Database With LinkedIn Profile Data').item.json['LinkedIn HeadLine'] }}\n\n🧩 User data: use get user tool to get the data, you are sending the message on behalf of the user.\n\n🧩 message context: {{ $json.Context }}.\n\n\ndon't use similar words as hey hi again and again ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        656
+      ],
+      "id": "5a33bd43-befe-400d-9bd6-94dfe0d3230c",
+      "name": "DM out1",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://YourUnipileURL/api/v1/chats",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_API_KEY"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "attendees_ids",
+              "value": "={{ $('Update Database With LinkedIn Profile Data').item.json['LinkedIn provider-Id'] }}"
+            },
+            {
+              "name": "account_id",
+              "value": "={{ $('When Executed by Another Workflow').item.json.accountId }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1424,
+        640
+      ],
+      "id": "71fa7aad-ff45-45c7-b659-ba95248ad8af",
+      "name": "send message1",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "LinkedIn Campaign",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Campaign ID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json[\"Campaign ID\"] }}"
+            },
+            {
+              "keyName": "appUserID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.appUserID }}"
+            },
+            {
+              "keyName": "linkedin",
+              "condition": "eq",
+              "keyValue": "={{ $('Update Database With LinkedIn Profile Data').item.json.linkedin }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "DM",
+              "fieldValue": "={{ $('DM out1').item.json.output }}"
+            },
+            {
+              "fieldId": "chatID",
+              "fieldValue": "={{ $json.chat_id }}"
+            },
+            {
+              "fieldId": "Invitation",
+              "fieldValue": "Existing"
+            },
+            {
+              "fieldId": "ChatSummary",
+              "fieldValue": "=DM sent by us : {{ $('DM out1').item.json.output }}"
+            },
+            {
+              "fieldId": "lastActionAt",
+              "fieldValue": "={{ $now.toISO() }}"
+            },
+            {
+              "fieldId": "OutreachStatus",
+              "fieldValue": "DM"
+            },
+            {
+              "fieldId": "message count",
+              "fieldValue": "={{ $('Update Database With LinkedIn Profile Data').item.json[\"message count\"] + 1 }}"
+            },
+            {
+              "fieldId": "lastMessage",
+              "fieldValue": "={{ $('DM out1').item.json.output }}"
+            },
+            {
+              "fieldId": "message_id",
+              "fieldValue": "={{ $('send message1').item.json.message_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1744,
+        640
+      ],
+      "id": "33605048-0e8c-4331-972f-df4619c7ad74",
+      "name": "Update a row2",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5c38e92a-a2ce-4034-9123-36a557633404",
+              "leftValue": "={{ $('Update Database With LinkedIn Profile Data').item.json.NetworkDistance }}",
+              "rightValue": "DISTANCE_1",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        560
+      ],
+      "id": "584a6f28-162d-46ed-a2e3-c8279af354d1",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://YourUnipileURL/api/v1/users/invite",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_API_KEY"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "provider_id",
+              "value": "={{ $('Update Database With LinkedIn Profile Data').item.json['LinkedIn provider-Id'] }}"
+            },
+            {
+              "name": "account_id",
+              "value": "={{ $('When Executed by Another Workflow').item.json.accountId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        912,
+        464
+      ],
+      "id": "19976608-2fdd-477c-a2f1-08b3e8c5705d",
+      "name": "sent invitation1",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "LinkedIn Campaign",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Campaign ID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json[\"Campaign ID\"] }}"
+            },
+            {
+              "keyName": "appUserID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.appUserID }}"
+            },
+            {
+              "keyName": "linkedin",
+              "condition": "eq",
+              "keyValue": "={{ $('Update Database With LinkedIn Profile Data').item.json.linkedin }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "Invitation",
+              "fieldValue": "sent"
+            },
+            {
+              "fieldId": "postURL",
+              "fieldValue": "NIL"
+            },
+            {
+              "fieldId": "comment",
+              "fieldValue": "NIL"
+            },
+            {
+              "fieldId": "lastActionAt",
+              "fieldValue": "={{ $now.toISO() }}"
+            },
+            {
+              "fieldId": "invitationId",
+              "fieldValue": "={{ $json.invitation_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        448
+      ],
+      "id": "3f7fed69-91b6-4269-a1c5-5c21bccaac2a",
+      "name": "Update a row3",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "this node will return the data of the user, you are sending messages on behalf on this person.",
+        "url": "https://YourUnipileURL/api/v1/users/me",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "account_id",
+              "value": "={{ $('When Executed by Another Workflow').item.json.accountId }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_API_KEY"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        464
+      ],
+      "id": "eb1fd019-d65b-4799-8f1b-ed174fae7299",
+      "name": "get_user"
+    },
+    {
+      "parameters": {
+        "toolDescription": "this node will return the data of the user, you are sending messages on behalf on this person.",
+        "url": "https://YourUnipileURL/api/v1/users/me",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "account_id",
+              "value": "={{ $('When Executed by Another Workflow').item.json.accountId }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_API_KEY"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1216,
+        912
+      ],
+      "id": "34293949-d766-4cd6-b9d4-54e56cd789a5",
+      "name": "get_user1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "Campaign",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json[\"Campaign ID\"] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2256,
+        304
+      ],
+      "id": "cc2a772a-5fa0-4ddc-8c87-9cbc8d68756f",
+      "name": "Get a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "Campaign",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json[\"Campaign ID\"] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        768,
+        656
+      ],
+      "id": "586459bd-c0c8-4577-8b97-d1a8204f7daa",
+      "name": "Get a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "linkedin"
+            },
+            {
+              "name": "Campaign ID",
+              "type": "number"
+            },
+            {
+              "name": "appUserID"
+            },
+            {
+              "name": "sno",
+              "type": "number"
+            },
+            {
+              "name": "accountId"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -752,
+        192
+      ],
+      "id": "9dc3bdcf-91d1-4eb6-be6a-8c9777a6611a",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "LinkedIn Campaign",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Campaign ID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json[\"Campaign ID\"] }}"
+            },
+            {
+              "keyName": "appUserID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.appUserID }}"
+            },
+            {
+              "keyName": "linkedin",
+              "condition": "eq",
+              "keyValue": "={{ $('Update Database With LinkedIn Profile Data').item.json.linkedin }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "Invitation",
+              "fieldValue": "NIL"
+            },
+            {
+              "fieldId": "postURL",
+              "fieldValue": "={{ $('Limit').item.json.items.social_id }}"
+            },
+            {
+              "fieldId": "comment",
+              "fieldValue": "={{ $('Generate Relevant Comment').item.json.output }}"
+            },
+            {
+              "fieldId": "lastActionAt",
+              "fieldValue": "={{ $now.toISO() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2272,
+        112
+      ],
+      "id": "e4aecc0b-1b37-4222-bbcd-82456b0b6976",
+      "name": "Update a row6",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "LinkedIn Campaign",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Campaign ID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json[\"Campaign ID\"] }}"
+            },
+            {
+              "keyName": "appUserID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.appUserID }}"
+            },
+            {
+              "keyName": "linkedin",
+              "condition": "eq",
+              "keyValue": "={{ $('Update Database With LinkedIn Profile Data').item.json.linkedin }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "Invitation",
+              "fieldValue": "NIL"
+            },
+            {
+              "fieldId": "postURL",
+              "fieldValue": "NIL"
+            },
+            {
+              "fieldId": "comment",
+              "fieldValue": "NIL"
+            },
+            {
+              "fieldId": "lastActionAt",
+              "fieldValue": "={{ $now.toISO() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        480
+      ],
+      "id": "b45ebf60-39c3-45dc-836b-8e00f5dcf698",
+      "name": "Update a row8",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "LinkedIn Campaign",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Campaign ID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json[\"Campaign ID\"] }}"
+            },
+            {
+              "keyName": "appUserID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.appUserID }}"
+            },
+            {
+              "keyName": "linkedin",
+              "condition": "eq",
+              "keyValue": "={{ $('Update Database With LinkedIn Profile Data').item.json.linkedin }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "chatID",
+              "fieldValue": "=error"
+            },
+            {
+              "fieldId": "Invitation",
+              "fieldValue": "Existing"
+            },
+            {
+              "fieldId": "lastActionAt",
+              "fieldValue": "={{ $now.toISO() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        832
+      ],
+      "id": "84c19886-6346-4aaa-b1d8-2e06f8bffbe1",
+      "name": "Update a row9",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "LinkedIn Campaign",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Campaign ID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json[\"Campaign ID\"] }}"
+            },
+            {
+              "keyName": "appUserID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.appUserID }}"
+            },
+            {
+              "keyName": "linkedin",
+              "condition": "eq",
+              "keyValue": "={{ $('Update Database With LinkedIn Profile Data').item.json.linkedin }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "Invitation",
+              "fieldValue": "existing"
+            },
+            {
+              "fieldId": "postURL",
+              "fieldValue": "={{ $('Limit').item.json.items.social_id }}"
+            },
+            {
+              "fieldId": "comment",
+              "fieldValue": "={{ $('Generate Relevant Comment').item.json.output }}"
+            },
+            {
+              "fieldId": "lastActionAt",
+              "fieldValue": "={{ $now.toISO() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3088,
+        432
+      ],
+      "id": "45f86a74-3941-45e6-84ab-414079b09468",
+      "name": "Update a row10",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "profiles",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.appUserID }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        304
+      ],
+      "id": "c8c1acdd-c36d-45df-b8e1-a5e87ffa0039",
+      "name": "Get a row3",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 50.6
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -352,
+        160
+      ],
+      "id": "20fa9fc5-f828-42ad-b79d-9c8fec8195aa",
+      "name": "Wait",
+      "webhookId": "d59076a4-7ae6-47e8-89af-f588a74bd446"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        352,
+        240
+      ],
+      "id": "6997e98d-272f-4cae-9dbf-0d51e42b4ebe",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_GEMINI_CREDENTIAL_ID",
+          "name": "Gemini Chat Model"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2432,
+        480
+      ],
+      "id": "f62ed7d7-d28a-4a63-9ca4-f99bd0a945f8",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_GEMINI_CREDENTIAL_ID",
+          "name": "Gemini Chat Model"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        976,
+        880
+      ],
+      "id": "75b08090-0832-403a-98d3-37b2a6e36dae",
+      "name": "Google Gemini Chat Model4",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YOUR_GEMINI_CREDENTIAL_ID",
+          "name": "Gemini Chat Model"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://YourUnipileURL/api/v1/users/{{ $json.linkedin }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "linkedin_sections",
+              "value": "experience"
+            },
+            {
+              "name": "notify",
+              "value": "true"
+            },
+            {
+              "name": "account_id",
+              "value": "={{ $json.accountId }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_API_KEY"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 5
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -560,
+        192
+      ],
+      "id": "1dc34b89-f103-47b8-a5f5-60590db0e667",
+      "name": "Fetch LinkedIn Profile Of Lead",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "Campaign",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json[\"Campaign ID\"] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        336
+      ],
+      "id": "45f13110-2405-487e-9f5d-ee5b7ccb279f",
+      "name": "If Not Found Update DB and Terminate",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "Campaign",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json[\"Campaign ID\"] }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "linkedinMessage",
+              "fieldValue": "={{ $json.linkedinMessage - 1 }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        336
+      ],
+      "id": "b5307d98-9200-4bb6-a5ab-b7942965897c",
+      "name": "Update Count",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "LinkedIn Campaign",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Campaign ID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json[\"Campaign ID\"] }}"
+            },
+            {
+              "keyName": "appUserID",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.appUserID }}"
+            },
+            {
+              "keyName": "sno",
+              "condition": "eq",
+              "keyValue": "={{ $('When Executed by Another Workflow').item.json.sno }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "NetworkDistance",
+              "fieldValue": "={{ $json.network_distance }}"
+            },
+            {
+              "fieldId": "LinkedIn provider-Id",
+              "fieldValue": "={{ $json.provider_id }}"
+            },
+            {
+              "fieldId": "LinkedIn HeadLine",
+              "fieldValue": "={{ $json.headline }} {{ $json.work_experience[0].position }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        160
+      ],
+      "id": "d6acde93-5250-4fd7-9f53-8637e466e6ec",
+      "name": "Update Database With LinkedIn Profile Data",
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+          "name": "CREDENTIAL_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3823699e-06d8-4b14-a8bb-6dbddeb09646",
+              "leftValue": "={{ $json.items.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        160
+      ],
+      "id": "b84dc706-f00b-4a2e-b31d-d3abfbe4b358",
+      "name": "If Post Found"
+    },
+    {
+      "parameters": {
+        "url": "=https://YourUnipileURL/api/v1/users/{{ $json['LinkedIn provider-Id'] }}/posts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "account_id",
+              "value": "={{ $('When Executed by Another Workflow').item.json.accountId }}"
+            },
+            {
+              "name": "limit",
+              "value": "1"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_API_KEY"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -32,
+        160
+      ],
+      "id": "a6b04de2-0eca-4141-af35-c01db2ac5a7d",
+      "name": "List Latest LinkedIn Post"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Post Content: \n{{ $json.items.text }}\nauthor name:\n{{ $json.items.author.name }}\n\nOnly Output the reply to this post! \n\nIf and only if error is in the output of then above then the output should be a generic linkedin comment, \n\nwith length 7 - 10 words that can resonate with the given post post \n",
+        "options": {
+          "systemMessage": "=You are commenting to the given post on linkedin, Your comments must sound like something a supportive colleague would naturally say.\n\nUse warm, conversational language that shows genuine interest\n\nInclude minor imperfections (contractions, casual phrasing)\n\nReference personal observations without saying \"in my experience\"\n\nShow authentic personality - be encouraging and constructive\n\nUse industry-specific language naturally, not textbook terms\n\nAvoid AI Red Flags:\n\nNever start with \"Great point about...\" or \"This resonates because...\"\n\nDon't use phrases like \"I'd add that...\" or \"Building on this...\"\n\nSkip corporate buzzwords (leverage, synergy, holistic, streamline, fascinating, evaluate, etc)\n\nAvoid overly structured or academic language\n\nNo perfectly balanced sentences or formal transitions\n\nContent Strategy:\n\nShare a quick, supportive observation that adds value\n\nReference something you've \"been seeing lately\" in the industry\n\nMention a helpful detail or alternative perspective\n\nAcknowledge challenges others might be facing\n\nLanguage Patterns to Use:\n\n\"This hits home because...\"\n\n\"So true, and what really helps is...\"\n\n\"Been seeing this too, especially when...\"\n\n\"Absolutely, and it's worth noting...\"\n\n\"This makes sense, particularly in...\"\n\nStrictly Forbidden:\n\nHashtags, em dashes, business pitches\n\nGeneric praise (\"insightful post,\" \"well said\")\n\nAI-typical phrases (\"This is particularly relevant,\" \"I couldn't agree more\")\n\nPerfect grammar and punctuation\n\nAsking questions that sound like lead generation\n\nYou have to write like a pro LinkedIn user who is expert in AI & startups\n\n\n## MOST IMPORTANT RESTRICTION:\nDo NOT use hashtags in comments or em dash\n\nYou are STRICTLY FORBIDDEN to use em dash\n\nDO NOT USE EM-DASHES!!! EVERR!!! IN ANY COMMENT! NO EM DASHES!!! NOOOO USAGE OF EM-DASHES ALLOWED!! NO EM-DASHES AT ALL COST!!! NEVER USE EM-DASHES IN ANY INSTANCE ANY COMMENT EVER!!!!!!!!!\n\n\nMake sure no responses ask for access, trials, or exploring features. Simply make a positive, genuinely helpful comment if no other option.\n\nResponse Requirements\nMaximum 1 sentence or under 200 characters\n\nSound conversational and genuinely supportive\n\nShow you actually read and understood the content\n\nAdd something specific and helpful, not generic wisdom\n\nOutput only the comment - no quotes, explanations, or formatting.\n\ncomment length should be 10 words"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        32
+      ],
+      "id": "eb7c5aa7-fb93-482c-8f3b-2ec618cb02f7",
+      "name": "Generate Relevant Comment",
+      "retryOnFail": true,
+      "maxTries": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://YourUnipileURL/api/v1/posts/{{ $('Limit').item.json.items.social_id }}/comments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_API_KEY"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "account_id",
+              "value": "={{ $('When Executed by Another Workflow').item.json.accountId }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        -16
+      ],
+      "id": "a9653ccc-e413-4c62-a3d2-bbb8fe931786",
+      "name": "Comment On Post",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5c38e92a-a2ce-4034-9123-36a557633404",
+              "leftValue": "={{ $('Update Database With LinkedIn Profile Data').item.json.NetworkDistance }}",
+              "rightValue": "DISTANCE_1",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "598ae6f7-d829-40ec-ac04-7fe866e26409",
+              "leftValue": "={{ $('Update Database With LinkedIn Profile Data').item.json.NetworkDistance }}",
+              "rightValue": "FIRST_DEGREE",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1632,
+        16
+      ],
+      "id": "7a245fcd-849f-4f0b-8cf0-11f09cd13cd1",
+      "name": "If Not Connection"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://YourUnipileURL/api/v1/users/invite",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "YOUR_API_KEY"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "provider_id",
+              "value": "={{ $('Fetch LinkedIn Profile Of Lead').item.json.provider_id }}"
+            },
+            {
+              "name": "account_id",
+              "value": "={{ $('When Executed by Another Workflow').item.json.accountId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1872,
+        32
+      ],
+      "id": "524bc6e4-61d4-42b8-a553-3a2d52c1b457",
+      "name": "Send invitation",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "**This Portion Of The Workflow Deals With The Part Of LinkedIn Invitation Sending and DM Sending Based On The Context of the Given Campaign and User Profile,  If Lead is already a connection of the user then a DM is sent on LinkedIn and else The Request is Sent to the Lead**",
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1248,
+        224
+      ],
+      "typeVersion": 1,
+      "id": "d752832d-8fe1-46d5-87c4-2c10e92eec55",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {
+    "DM out": [
+      {
+        "json": {
+          "output": "Hey Adarsh, your background as an AI Developer really stood out! I’m currently interning at appUserAI and would love to chat about your experiences in automation—thought you might have a cool take on it. Let’s connect!"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "DM out": {
+      "main": [
+        [
+          {
+            "node": "send message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "send message": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update a row10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leave Reaction on Post1": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Wait10": {
+      "main": [
+        [
+          {
+            "node": "If Not Connection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Leave Reaction on Post1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Wait10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row": {
+      "main": [
+        []
+      ]
+    },
+    "Update a row1": {
+      "main": [
+        []
+      ]
+    },
+    "DM out1": {
+      "main": [
+        [
+          {
+            "node": "send message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "send message1": {
+      "main": [
+        [
+          {
+            "node": "Update a row2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update a row9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "sent invitation1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sent invitation1": {
+      "main": [
+        [
+          {
+            "node": "Update a row3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update a row8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row3": {
+      "main": [
+        []
+      ]
+    },
+    "Update a row2": {
+      "main": [
+        []
+      ]
+    },
+    "get_user": {
+      "ai_tool": [
+        [
+          {
+            "node": "DM out",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_user1": {
+      "ai_tool": [
+        [
+          {
+            "node": "DM out1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row": {
+      "main": [
+        [
+          {
+            "node": "DM out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row1": {
+      "main": [
+        [
+          {
+            "node": "DM out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Fetch LinkedIn Profile Of Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row6": {
+      "main": [
+        []
+      ]
+    },
+    "Get a row3": {
+      "main": [
+        [
+          {
+            "node": "Get a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row10": {
+      "main": [
+        []
+      ]
+    },
+    "Update a row9": {
+      "main": [
+        []
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Update Database With LinkedIn Profile Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Relevant Comment",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "DM out1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "DM out",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row8": {
+      "main": [
+        []
+      ]
+    },
+    "Fetch LinkedIn Profile Of Lead": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If Not Found Update DB and Terminate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Not Found Update DB and Terminate": {
+      "main": [
+        [
+          {
+            "node": "Update Count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Count": {
+      "main": [
+        []
+      ]
+    },
+    "Update Database With LinkedIn Profile Data": {
+      "main": [
+        [
+          {
+            "node": "List Latest LinkedIn Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Post Found": {
+      "main": [
+        [
+          {
+            "node": "Generate Relevant Comment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Latest LinkedIn Post": {
+      "main": [
+        [
+          {
+            "node": "If Post Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Relevant Comment": {
+      "main": [
+        [
+          {
+            "node": "Comment On Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Comment On Post": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "If Not Connection": {
+      "main": [
+        [
+          {
+            "node": "Get a row3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send invitation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send invitation": {
+      "main": [
+        [
+          {
+            "node": "Update a row1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update a row6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0cb3d3b2-f65e-4240-b8d1-df784c8d3df4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db030780bee6f6753243e0353bbd8b9f10dd5dd83871b5bb84664f14b629c661"
+  },
+  "nodeGroups": [],
+  "id": "1eZXCcxb1ErlbPNg",
+  "tags": []
+}
